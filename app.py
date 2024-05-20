@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QHBoxLayout, QAction, QFileDialog, QWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QIcon
 
 class MarkdownPreviewer(QMainWindow):
     def __init__(self):
@@ -47,9 +48,7 @@ class MarkdownPreviewer(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-
-        # Cargar el archivo HTML que renderiza el Markdown
-        self.preview.setHtml(open("markdown_preview.html").read(), baseUrl=QUrl.fromLocalFile("."))
+        self.setWindowIcon(QIcon('Icon.png'))
 
     def onTextChanged(self):
         md_text = self.editor.toPlainText()
@@ -57,7 +56,7 @@ class MarkdownPreviewer(QMainWindow):
         self.updatePreview(md_text_limpio)
 
     def updatePreview(self, md_text):
-        # Actualizar la vista previa con el Markdown renderizado
+    # Actualizar la vista previa con el Markdown renderizado
         html_content = f"""
             <html>
             <head>
@@ -83,6 +82,7 @@ class MarkdownPreviewer(QMainWindow):
             </html>
         """
         self.preview.setHtml(html_content, baseUrl=QUrl.fromLocalFile("."))
+
 
     def openFile(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Abrir archivo Markdown", "", "Archivos Markdown (*.md)")
