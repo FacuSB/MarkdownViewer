@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
+    <style>
+        /* Estilos para las tablas */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Estilos para las imágenes */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="preview"></div>
+    <script>
+        function updatePreview(mdText) {
+            // Opciones para marked.js
+            marked.setOptions({
+                gfm: true,
+                tables: true,
+                breaks: true,
+                pedantic: false,
+                sanitize: false,
+                smartLists: true,
+                smartypants: false,
+            });
+
+            // Renderizar el Markdown
+            document.getElementById('preview').innerHTML = marked(mdText);
+        }
+    </script>
+</body>
+</html>
