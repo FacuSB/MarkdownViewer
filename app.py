@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QHBoxLayout, QAction, QFileDialog, QWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl,QTimer
 from PyQt5.QtGui import QIcon
 import urllib.parse
 
@@ -11,7 +11,7 @@ class MarkdownPreviewer(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Markdown Live Preview')
+        self.setWindowTitle('MarkdownPreviewer')
         self.setGeometry(100, 100, 1200, 600)
 
         # Caja de texto para el editor de Markdown (columna izquierda)
@@ -25,6 +25,7 @@ class MarkdownPreviewer(QMainWindow):
         """)
 
         # Vista previa de Markdown (columna derecha)
+        self.preview = QTextEdit(self)
         self.preview = QWebEngineView(self)
         self.preview.setStyleSheet("""
             QWebEngineView {
@@ -49,7 +50,7 @@ class MarkdownPreviewer(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-        self.setWindowIcon(QIcon('Icon.png'))
+        self.setWindowIcon(QIcon('img/Icon.ico'))
 
     def onTextChanged(self):
         md_text = self.editor.toPlainText()
@@ -88,7 +89,6 @@ class MarkdownPreviewer(QMainWindow):
                     text-decoration: none;
                     transition: color 0.2s;
                     }}
-
                     a:hover {{
                     color: #0550ae;
                     }}
@@ -101,8 +101,6 @@ class MarkdownPreviewer(QMainWindow):
                     img, table, pre {{
                     class: 'box';
                     }}
-
-
                 </style>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
             </head>
@@ -120,13 +118,17 @@ class MarkdownPreviewer(QMainWindow):
         """
         self.preview.setHtml(html_content, baseUrl=QUrl.fromLocalFile("."))
 
-    def openFile(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Abrir archivo Markdown", "", "Archivos Markdown (*.md)")
+    def openFile(self, file_path=None):
+        # Si no se proporciona una ruta de archivo, muestra el diálogo de apertura de archivo
+        if not file_path:
+            file_path, _ = QFileDialog.getOpenFileName(self, "Abrir archivo Markdown", "", "Archivos Markdown (*.md)")
+        # Si se proporciona una ruta de archivo, lo abre
         if file_path:
             with open(file_path, "r", encoding='utf-8') as file:
                 markdown_text = file.read()
                 self.editor.setPlainText(markdown_text)
                 self.onTextChanged()
+
 
     def limpiarMarkdown(self, md_text):
         # Eliminar espacios en blanco al principio y al final de cada línea
@@ -134,9 +136,14 @@ class MarkdownPreviewer(QMainWindow):
         # Unir las líneas limpias
         md_text_limpio = '\n'.join(lineas_limpias)
         return md_text_limpio
+    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MarkdownPreviewer()
     ex.show()
+    # Verifica si hay argumentos de línea de comandos pasados al script
+    if len(sys.argv) > 1:
+        file_path = sys.argv[1]
+        QTimer.singleShot(0, lambda: ex.openFile(file_path))
     sys.exit(app.exec_())
